@@ -1,0 +1,16 @@
+submitter:
+  git.sr.ht:
+    enabled: true
+    allow-refs:
+      - refs/heads/main
+      - "refs/tags/*"
+image: nixos/unstable
+environment:
+  NIX_CONFIG: "experimental-features = nix-command flakes"
+  PROJECT: smoothflake
+sources:
+  - https://git.sr.ht/~bzm/smoothflake
+tasks:
+  - check-default-template: |
+      cd $PROJECT/template
+      nix flake check --all-systems
