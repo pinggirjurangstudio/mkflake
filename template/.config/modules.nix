@@ -14,6 +14,8 @@ let
     genAttrs
     mapAttrs
     ;
+  extendedLib = lib.extend (self: super: import ./lib.nix { lib = self; });
+  inherit (extendedLib) removeEmptyAttrs;
 
   # https://wiki.nixos.org/wiki/Flakes#Output_schema
   baseModule = {
@@ -93,7 +95,7 @@ let
       modules = [ baseModule ] ++ modules;
       specialArgs = inputs // {
         inherit self pkgs;
-        lib = lib.extend (self: super: import ./lib.nix { inherit lib; });
+        lib = extendedLib;
       };
     }).config;
 
@@ -105,11 +107,9 @@ let
       pkgs = import nixpkgs { inherit system; };
     }
   );
-
-  removeEmpty = lib.filterAttrs (name: value: value != { } && value != null);
 in
 
-removeEmpty {
+removeEmptyAttrs {
   inherit (globalConfig) templates nixosModules overlays;
   checks = mapAttrs (sys: cfg: cfg.checks) systemConfigs;
   formatter = mapAttrs (sys: cfg: cfg.formatter) systemConfigs;
