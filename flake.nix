@@ -5,6 +5,7 @@
     { self }:
     {
       lib.mkFlake = import ./mkflake.nix;
+
       templates = {
         default = {
           path = ./templates/default;
@@ -15,5 +16,22 @@
           description = "Minimal smoothflake template";
         };
       };
+
+      flakeModules.hello = (
+        { ... }:
+        {
+          perSystem =
+            { pkgs, ... }:
+            {
+              packages.hello = pkgs.writeShellApplication {
+                name = "hello";
+                runtimeInputs = [ pkgs.neo-cowsay ];
+                text = ''
+                  cowsay -f sage "Hello from smoothflake!"
+                '';
+              };
+            };
+        }
+      );
     };
 }
