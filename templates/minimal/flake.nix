@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    smoothflake.url = "path:/Users/billyzaelanimalik/pinggirjurang.studio/smoothflake";
+    smoothflake.url = "sourcehut:~bzm/smoothflake";
   };
 
   outputs =
