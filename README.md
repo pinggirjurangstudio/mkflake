@@ -5,5 +5,16 @@ A modular flake builder with `smoothflake.lib.mkFlake`.
 
 ## Templates
 
-- Default `nix flake init -t sourcehut:~bzm/smoothflake`
-- Minimal `nix flake init -t sourcehut:~bzm/smoothflake#minimal`
+- Default smoothflake template with treefmt and formatter
+    ```sh
+    nix flake init -t sourcehut:~bzm/smoothflake
+    ```
+- Minimal smoothflake template
+    ```sh
+    nix flake init -t sourcehut:~bzm/smoothflake#minimal
+    ```
+- Hello smoothflake template for flakeModules demo
+    ```sh
+    nix flake init -t sourcehut:~bzm/smoothflake#minimal
+    nix run .#hello
+    ```

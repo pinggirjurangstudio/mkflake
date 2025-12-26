@@ -1,13 +1,9 @@
 {
-  description = "Default smoothflake template with treefmt checks and formatter";
+  description = "Hello smoothflake template for flakeModules demo";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     smoothflake.url = "sourcehut:~bzm/smoothflake";
-    treefmt-nix = {
-      url = "github:numtide/treefmt-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs =
@@ -22,8 +18,7 @@
         "aarch64-darwin"
       ];
       imports = [
-        { perSystem = import ./.config/shell.nix; }
-        { perSystem = import ./.config/treefmt.nix; }
+        smoothflake.flakeModules.hello
       ];
     };
 }

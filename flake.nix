@@ -9,11 +9,15 @@
       templates = {
         default = {
           path = ./templates/default;
-          description = "Default smoothflake template";
+          description = "Default smoothflake template with treefmt checks and formatter";
         };
         minimal = {
           path = ./templates/minimal;
           description = "Minimal smoothflake template";
+        };
+        hello = {
+          path = ./templates/hello;
+          description = "Hello smoothflake template for flakeModules demo";
         };
       };
 
