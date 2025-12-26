@@ -34,16 +34,22 @@ let
       ++ sysImports;
     }).config
   );
+
+  mapSystems =
+    attrName:
+    lib.filterAttrs (sys: val: val != { } && val != null) (
+      lib.mapAttrs (sys: cfg: cfg.${attrName}) perSystemConfigs
+    );
 in
 
 removeEmptyAttrs (
   {
-    checks = lib.mapAttrs (sys: cfg: cfg.checks) perSystemConfigs;
-    formatter = lib.mapAttrs (sys: cfg: cfg.formatter) perSystemConfigs;
-    devShells = lib.mapAttrs (sys: cfg: cfg.devShells) perSystemConfigs;
-    packages = lib.mapAttrs (sys: cfg: cfg.packages) perSystemConfigs;
-    legacyPackages = lib.mapAttrs (sys: cfg: cfg.legacyPackages) perSystemConfigs;
-    apps = lib.mapAttrs (sys: cfg: cfg.apps) perSystemConfigs;
+    checks = mapSystems "checks";
+    formatter = mapSystems "formatter";
+    devShells = mapSystems "devShells";
+    packages = mapSystems "packages";
+    legacyPackages = mapSystems "legacyPackages";
+    apps = mapSystems "apps";
   }
   // globalConfig
 )
