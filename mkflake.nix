@@ -2,7 +2,7 @@
   nixpkgs,
   specialArgs,
   imports ? [ ],
-  systems,
+  systems ? [ ],
   perSystem ? (system: { }),
 }:
 
