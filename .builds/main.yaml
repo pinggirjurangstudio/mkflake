@@ -20,6 +20,9 @@ tasks:
   - check-minimal-template: |
       cd $PROJECT/templates/minimal
       nix flake check --all-systems
+  - check-unfree-template: |
+      cd $PROJECT/templates/unfree
+      nix flake check --all-systems
   - check-hello-template: |
       cd $PROJECT/templates/hello
       nix flake check --all-systems

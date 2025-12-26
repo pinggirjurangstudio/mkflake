@@ -15,6 +15,10 @@
           path = ./templates/minimal;
           description = "Minimal smoothflake template";
         };
+        unfree = {
+          path = ./templates/unfree;
+          description = "Unfree smoothflake template with treefmt checks and formatter";
+        };
         hello = {
           path = ./templates/hello;
           description = "Hello smoothflake template for flakeModules demo";

@@ -13,8 +13,12 @@ A modular flake builder with `smoothflake.lib.mkFlake`.
     ```sh
     nix flake init -t sourcehut:~bzm/smoothflake#minimal
     ```
+- Unfree smoothflake template with treefmt and formatter
+    ```sh
+    nix flake init -t sourcehut:~bzm/smoothflake#unfree
+    ```
 - Hello smoothflake template for flakeModules demo
     ```sh
-    nix flake init -t sourcehut:~bzm/smoothflake#minimal
+    nix flake init -t sourcehut:~bzm/smoothflake#hello
     nix run .#hello
     ```
