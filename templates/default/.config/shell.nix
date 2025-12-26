@@ -2,7 +2,7 @@
 
 {
   devShells.default = pkgs.mkShell {
-    name = "smoothflake";
+    name = "default-smoothflake";
     packages = [ ];
   };
 }

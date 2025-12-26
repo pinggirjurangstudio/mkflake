@@ -21,9 +21,6 @@
         # - nixosModules
         # - overlays
         # - other arbitrary attributes
-        {
-          config.lib.helloWorld = "Hello, World!";
-        }
       ];
       systems = [
         "x86_64-linux"
