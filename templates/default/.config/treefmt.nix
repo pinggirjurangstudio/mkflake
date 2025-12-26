@@ -2,7 +2,6 @@
 
 let
   inherit (inputs) self;
-
   treefmt =
     (treefmt-nix.lib.evalModule pkgs {
       projectRootFile = "flake.nix";
@@ -10,10 +9,10 @@ let
         nixfmt.enable = true;
         yamlfmt.enable = true;
       };
-    }).config.build;
+    }).config;
 in
 
 {
-  formatter = treefmt.wrapper;
-  checks.format = treefmt.check self;
+  formatter = treefmt.build.wrapper;
+  checks.format = treefmt.build.check self;
 }

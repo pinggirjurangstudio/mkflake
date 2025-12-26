@@ -24,11 +24,11 @@
     },
     "smoothflake": {
       "locked": {
-        "lastModified": 1766721082,
-        "narHash": "sha256-aPoNQvmek9enVpgELoARfwllNDQm6jOKYrUcGr+yH9M=",
+        "lastModified": 1766764669,
+        "narHash": "sha256-QOgXjlW3okVkqBDsPpbRI7q8usEp9kwePuAvt9ZlKhw=",
         "owner": "~bzm",
         "repo": "smoothflake",
-        "rev": "445a06972490577c7aabaa861505af3d2b0d09bb",
+        "rev": "1bf7be9f1c72afcc2cce3af9ac9493c907a1da44",
         "type": "sourcehut"
       },
       "original": {
