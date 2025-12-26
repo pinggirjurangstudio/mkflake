@@ -25,21 +25,18 @@
         };
       };
 
-      flakeModules.hello = (
-        { ... }:
-        {
-          perSystem =
-            { pkgs, ... }:
-            {
-              packages.hello = pkgs.writeShellApplication {
-                name = "hello";
-                runtimeInputs = [ pkgs.neo-cowsay ];
-                text = ''
-                  cowsay -f sage "Hello from smoothflake!"
-                '';
-              };
+      flakeModules.hello = {
+        perSystem =
+          { pkgs, ... }:
+          {
+            packages.hello = pkgs.writeShellApplication {
+              name = "hello";
+              runtimeInputs = [ pkgs.neo-cowsay ];
+              text = ''
+                cowsay -f sage "Hello from smoothflake!"
+              '';
             };
-        }
-      );
+          };
+      };
     };
 }
