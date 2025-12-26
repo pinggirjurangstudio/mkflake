@@ -108,7 +108,10 @@ let
         inherit specialArgs;
         modules = [
           schema
-          { _module.args.pkgs = pkgs; }
+          {
+            _module.args.pkgs = lib.mkDefault pkgs;
+            _module.args.system = system;
+          }
           perSystemConfig
         ];
       }).config
