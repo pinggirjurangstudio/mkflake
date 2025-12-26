@@ -1,12 +1,9 @@
 {
-  description = "A generic flake template for every project.";
+  description = "A modular flake builder with smoothflake.lib.mkFlake";
 
   outputs =
     { self }:
     {
-      templates.default = {
-        path = ./template;
-        description = "A generic flake template for every project.";
-      };
+      lib.mkFlake = import ./mkflake.nix;
     };
 }
