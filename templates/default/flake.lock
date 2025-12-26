@@ -19,7 +19,23 @@
     "root": {
       "inputs": {
         "nixpkgs": "nixpkgs",
+        "smoothflake": "smoothflake",
         "treefmt-nix": "treefmt-nix"
+      }
+    },
+    "smoothflake": {
+      "locked": {
+        "lastModified": 1766717718,
+        "narHash": "sha256-VD3npVgzjPP1Orev4O4/S4OY74Mr0bLD4Ks2k3Wmt6Y=",
+        "owner": "~bzm",
+        "repo": "smoothflake",
+        "rev": "ecfa2c3bc1055b5fbebd59258dd6f813536a7315",
+        "type": "sourcehut"
+      },
+      "original": {
+        "owner": "~bzm",
+        "repo": "smoothflake",
+        "type": "sourcehut"
       }
     },
     "treefmt-nix": {

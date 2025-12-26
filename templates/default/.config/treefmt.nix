@@ -1,17 +1,19 @@
-{ pkgs, treefmt-nix }:
+{ pkgs, treefmt-nix, ... }@inputs:
 
 let
-  cfg =
+  inherit (inputs) self;
+
+  treefmt =
     (treefmt-nix.lib.evalModule pkgs {
       projectRootFile = "flake.nix";
       programs = {
         nixfmt.enable = true;
         yamlfmt.enable = true;
       };
-    }).config;
+    }).config.build;
 in
 
 {
-  formatter = cfg.build.wrapper;
-  check = cfg.build.check;
+  formatter = treefmt.wrapper;
+  checks.format = treefmt.check self;
 }

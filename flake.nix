@@ -5,5 +5,11 @@
     { self }:
     {
       lib.mkFlake = import ./mkflake.nix;
+      templates = {
+        default = {
+          path = ./templates/default;
+          description = "Default smoothflake template";
+        };
+      };
     };
 }

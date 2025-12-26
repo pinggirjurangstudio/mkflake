@@ -12,5 +12,8 @@ sources:
   - https://git.sr.ht/~bzm/smoothflake
 tasks:
   - check: |
-      cd $PROJECT/template
+      cd $PROJECT
+      nix flake check --all-systems
+  - check-template-default: |
+      cd $PROJECT/templates/default
       nix flake check --all-systems

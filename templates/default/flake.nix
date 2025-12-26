@@ -1,0 +1,49 @@
+{
+  description = "Default smoothflake template";
+
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    smoothflake.url = "sourcehut:~bzm/smoothflake";
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+
+  outputs =
+    { nixpkgs, smoothflake, ... }@inputs:
+    smoothflake.lib.mkFlake {
+      inherit nixpkgs;
+      specialArgs = inputs;
+      imports = [
+        # Modules for system-agnostic:
+        # - templates
+        # - nixosModules
+        # - overlays
+        # - other arbitrary attributes
+        {
+          config.lib.helloWorld = "Hello, World!";
+        }
+      ];
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "x86_64-darwin"
+        "aarch64-darwin"
+      ];
+      perSystem = system: {
+        pkgs = import nixpkgs { inherit system; };
+        imports = [
+          # Modules for system-specific:
+          # - checks
+          # - formatter
+          # - devShells
+          # - packages
+          # - legacyPackages
+          # - apps
+          ./.config/shell.nix
+          ./.config/treefmt.nix
+        ];
+      };
+    };
+}
