@@ -10,6 +10,10 @@
           path = ./templates/default;
           description = "Default smoothflake template";
         };
+        minimal = {
+          path = ./templates/minimal;
+          description = "Minimal smoothflake template";
+        };
       };
     };
 }

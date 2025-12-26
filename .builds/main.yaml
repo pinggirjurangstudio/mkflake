@@ -14,6 +14,9 @@ tasks:
   - check: |
       cd $PROJECT
       nix flake check --all-systems
-  - check-template-default: |
+  - check-default-template: |
       cd $PROJECT/templates/default
+      nix flake check --all-systems
+  - check-minimal-template: |
+      cd $PROJECT/templates/minimal
       nix flake check --all-systems
