@@ -31,6 +31,11 @@ let
         type = types.attrsOf types.unspecified;
         default = { };
       };
+      nixosConfigurations = mkOption {
+        type = types.attrsOf types.unspecified;
+        default = { };
+        description = "Usage: nixos-rebuild switch --flake .#<hostname>";
+      };
       overlays = mkOption {
         type = types.attrsOf types.unspecified;
         default = { };
