@@ -17,6 +17,8 @@
         "aarch64-darwin"
       ];
       imports = [
+        # This modules are exposing packages.<system>.hello and can be run with:
+        # nix run .#hello
         smoothflake.flakeModules.hello
       ];
     };
