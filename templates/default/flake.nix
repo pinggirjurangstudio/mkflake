@@ -1,20 +1,15 @@
 {
-  description = "Default smoothflake template with treefmt checks and formatter";
+  description = "Default smoothflake template";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     smoothflake.url = "sourcehut:~bzm/smoothflake";
-    treefmt-nix = {
-      url = "github:numtide/treefmt-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs =
     { nixpkgs, smoothflake, ... }@inputs:
     smoothflake.lib.mkFlake {
-      inherit nixpkgs;
-      specialArgs = inputs;
+      inherit nixpkgs inputs;
       systems = [
         "x86_64-linux"
         "aarch64-linux"
@@ -22,6 +17,17 @@
         "aarch64-darwin"
       ];
       imports = [
+        # # Uncomment this to modify the pkgs, e.g. to set allowUnfree.
+        # {
+        #   perSystem =
+        #     { pkgs, system, ... }:
+        #     {
+        #       _module.args.pkgs = import nixpkgs {
+        #         inherit system;
+        #         config.allowUnfree = true;
+        #       };
+        #     };
+        # }
         { perSystem = import ./.config/shell.nix; }
         { perSystem = import ./.config/treefmt.nix; }
       ];

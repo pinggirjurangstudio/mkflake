@@ -1,18 +1,20 @@
-{ pkgs, treefmt-nix, ... }@inputs:
-
-let
-  inherit (inputs) self;
-  treefmt =
-    (treefmt-nix.lib.evalModule pkgs {
-      projectRootFile = "flake.nix";
-      programs = {
-        nixfmt.enable = true;
-        yamlfmt.enable = true;
-      };
-    }).config;
-in
+{ pkgs, ... }:
 
 {
-  formatter = treefmt.build.wrapper;
-  checks.format = treefmt.build.check self;
+  # See: https://treefmt.com/latest/getting-started/configure/#config-file
+  treefmt = {
+    formatter = {
+      nixfmt = {
+        command = "${pkgs.nixfmt}/bin/nixfmt";
+        includes = [ "*.nix" ];
+      };
+      yamlfmt = {
+        command = "${pkgs.yamlfmt}/bin/yamlfmt";
+        includes = [
+          "*.yaml"
+          "*.yml"
+        ];
+      };
+    };
+  };
 }

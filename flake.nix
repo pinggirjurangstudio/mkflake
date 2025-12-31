@@ -9,15 +9,14 @@
       templates = {
         default = {
           path = ./templates/default;
-          description = "Default smoothflake template with treefmt checks and formatter";
+          description = "Default smoothflake template";
         };
-        minimal = {
-          path = ./templates/minimal;
-          description = "Minimal smoothflake template";
-        };
-        unfree = {
-          path = ./templates/unfree;
-          description = "Unfree smoothflake template with treefmt checks and formatter";
+        lib = {
+          path = builtins.path {
+            path = ./.;
+            filter = p: _: baseNameOf p == "mkflake.nix";
+          };
+          description = "Use smoothflake by vendoring the mkflake.nix";
         };
         hello = {
           path = ./templates/hello;

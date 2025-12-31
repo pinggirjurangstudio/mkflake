@@ -9,8 +9,7 @@
   outputs =
     { nixpkgs, smoothflake, ... }@inputs:
     smoothflake.lib.mkFlake {
-      inherit nixpkgs;
-      specialArgs = inputs;
+      inherit nixpkgs inputs;
       systems = [
         "x86_64-linux"
         "aarch64-linux"

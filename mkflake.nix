@@ -1,3 +1,6 @@
+# Vendoring this file by using the following template:
+# nix flake init -t sourcehut:~bzm/smoothflake#lib
+
 {
   nixpkgs,
   inputs,
