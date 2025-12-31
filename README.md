@@ -45,7 +45,7 @@ A [modular](https://nixos.wiki/wiki/NixOS_modules) flake builder with `smoothfla
 
 ### Modular design
 
-If you like [modules](https://nixos.wiki/wiki/NixOS_modules) in NixOS, you'll love`smoothflake`.
+If you like [modules](https://nixos.wiki/wiki/NixOS_modules) in NixOS, you'll love `smoothflake`.
 
 ### Systems abstraction
 
@@ -138,7 +138,7 @@ allow us to use nix to configure them instead of using TOML. However, using
 `treefmt-nix` require adding another inputs to our flake.
 
 With `smoothflake`, you can use `treefmt` without adding yet another inputs.
-See the[example](https://git.sr.ht/~bzm/smoothflake/tree/main/item/templates/default/.config/treefmt.nix).
+See the [example](https://git.sr.ht/~bzm/smoothflake/tree/main/item/templates/default/.config/treefmt.nix).
 It will set `checks.<system>.default` and `formatter.<system>` in your flake
 outputs (overridable).
 
@@ -170,7 +170,7 @@ outputs (overridable).
 You can share the module you're creating by using `flakeModules.<name>` much
 like `nixosModules.<name>`.
 
-See `flakeModules.hello`outputs in
+See `flakeModules.hello` outputs in
 [flake.nix](https://git.sr.ht/~bzm/smoothflake/tree/main/item/flake.nix)
 on how to share your modules.
 See [hello template](https://git.sr.ht/~bzm/smoothflake/tree/main/item/templates/hello/flake.nix)
