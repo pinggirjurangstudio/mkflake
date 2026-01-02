@@ -165,16 +165,15 @@ outputs (overridable).
 }
 ```
 
-### Share your modules via `flakeModules`
+### Share your flake outputs
 
-You can share the module you're creating by using `flakeModules.<name>` much
-like `nixosModules.<name>`.
+You can share your outputs via the following attribute set:
+- `flakeModules.<name>` modules to be imported by other flakes
+- `lib.<name>` library
+- `flake` any other arbitrary attributes goes here
 
-See `flakeModules.hello` outputs in
-[flake.nix](https://git.sr.ht/~bzm/smoothflake/tree/main/item/flake.nix)
-on how to share your modules.
 See [hello template](https://git.sr.ht/~bzm/smoothflake/tree/main/item/templates/hello/flake.nix)
-on how to imports and use the modules.
+on how to imports modules from other flake.
 
 ## Templates
 
