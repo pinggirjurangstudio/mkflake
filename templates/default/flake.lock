@@ -18,9 +18,9 @@
     },
     "root": {
       "inputs": {
-        "nixpkgs": "nixpkgs",
+        "nixpkgs": "nixpkgs"
       }
-    },
+    }
   },
   "root": "root",
   "version": 7
