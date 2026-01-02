@@ -6,7 +6,6 @@
   inputs,
   systems ? [ ],
   imports ? [ ],
-  flakeModules ? { },
 }:
 
 let
@@ -16,27 +15,40 @@ let
   # https://wiki.nixos.org/wiki/Flakes#Output_schema
 
   _global = rec {
-    schema.freeformType = types.attrsOf types.anything;
     schema.options = {
       templates = mkOption {
-        type = types.attrsOf types.unspecified;
+        type = types.attrsOf types.anything;
         default = { };
       };
       nixosModules = mkOption {
-        type = types.attrsOf types.unspecified;
+        type = types.attrsOf types.anything;
         default = { };
       };
       nixosConfigurations = mkOption {
-        type = types.attrsOf types.unspecified;
+        type = types.attrsOf types.anything;
         default = { };
       };
       overlays = mkOption {
-        type = types.attrsOf types.unspecified;
+        type = types.attrsOf types.anything;
         default = { };
       };
       perSystem = mkOption {
         type = types.deferredModule;
-        default = { pkgs, ... }: { };
+        default = { };
+      };
+      flakeModules = mkOption {
+        type = types.attrsOf types.anything;
+        default = { };
+      };
+      lib = mkOption {
+        type = types.attrsOf types.anything;
+        default = { };
+      };
+      flake = mkOption {
+        type = types.submodule {
+          freeformType = types.anything;
+        };
+        default = { };
       };
     };
     config =
@@ -69,7 +81,7 @@ let
         default = { };
       };
       apps = mkOption {
-        type = types.attrsOf types.unspecified;
+        type = types.attrsOf types.anything;
         default = { };
       };
       treefmt = mkOption {
@@ -186,38 +198,24 @@ let
     );
   };
 
-  _flakeModules = rec {
-    schema.options = {
-      flakeModules = mkOption {
-        type = types.attrsOf types.unspecified;
-        default = { };
-      };
-    };
-    config =
-      (lib.evalModules {
-        modules = [
-          schema
-          { inherit flakeModules; }
-        ];
-      }).config;
-  };
-
   removeEmptyAttrs = lib.filterAttrs (_: v: v != { } && v != null);
   mapSystems = attr: removeEmptyAttrs (lib.mapAttrs (_: cfg: cfg.${attr}) _perSystem.config);
 in
 
-removeEmptyAttrs (
-  {
-    inherit (_flakeModules.config) flakeModules;
-    checks = mapSystems "checks";
-    formatter = mapSystems "formatter";
-    devShells = mapSystems "devShells";
-    packages = mapSystems "packages";
-    legacyPackages = mapSystems "legacyPackages";
-    apps = mapSystems "apps";
-  }
-  // builtins.removeAttrs _global.config [
-    "perSystem"
-    "flakeModules"
-  ]
-)
+removeEmptyAttrs {
+  inherit (_global.config)
+    templates
+    nixosModules
+    nixosConfigurations
+    overlays
+    flakeModules
+    lib
+    ;
+  checks = mapSystems "checks";
+  formatter = mapSystems "formatter";
+  devShells = mapSystems "devShells";
+  packages = mapSystems "packages";
+  legacyPackages = mapSystems "legacyPackages";
+  apps = mapSystems "apps";
+}
+// _global.config.flake
