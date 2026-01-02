@@ -17,19 +17,19 @@ let
   _global = rec {
     schema.options = {
       templates = mkOption {
-        type = types.attrsOf types.anything;
+        type = types.attrsOf types.unspecified;
         default = { };
       };
       nixosModules = mkOption {
-        type = types.attrsOf types.anything;
+        type = types.attrsOf types.unspecified;
         default = { };
       };
       nixosConfigurations = mkOption {
-        type = types.attrsOf types.anything;
+        type = types.attrsOf types.unspecified;
         default = { };
       };
       overlays = mkOption {
-        type = types.attrsOf types.anything;
+        type = types.attrsOf types.unspecified;
         default = { };
       };
       perSystem = mkOption {
@@ -37,16 +37,16 @@ let
         default = { };
       };
       flakeModules = mkOption {
-        type = types.attrsOf types.anything;
+        type = types.attrsOf types.unspecified;
         default = { };
       };
       lib = mkOption {
-        type = types.attrsOf types.anything;
+        type = types.attrsOf types.unspecified;
         default = { };
       };
       flake = mkOption {
         type = types.submodule {
-          freeformType = types.anything;
+          freeformType = types.attrsOf types.unspecified;
         };
         default = { };
       };
@@ -81,7 +81,7 @@ let
         default = { };
       };
       apps = mkOption {
-        type = types.attrsOf types.anything;
+        type = types.attrsOf types.unspecified;
         default = { };
       };
       treefmt = mkOption {

@@ -18,23 +18,7 @@
     },
     "root": {
       "inputs": {
-        "nixpkgs": "nixpkgs",
-        "smoothflake": "smoothflake"
-      }
-    },
-    "smoothflake": {
-      "locked": {
-        "lastModified": 1767351048,
-        "narHash": "sha256-IvxeP5E6ibB+T0tHF/TMiWS6ssSVa8vrEw8/qQMc75s=",
-        "owner": "~bzm",
-        "repo": "smoothflake",
-        "rev": "ab72b0bd19c00f4e3dcd34641c9abe099ddb3489",
-        "type": "sourcehut"
-      },
-      "original": {
-        "owner": "~bzm",
-        "repo": "smoothflake",
-        "type": "sourcehut"
+        "nixpkgs": "nixpkgs"
       }
     }
   },
