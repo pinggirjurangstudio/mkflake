@@ -139,7 +139,7 @@ allow us to use nix to configure them instead of using TOML. However, using
 
 With `smoothflake`, you can use `treefmt` without adding yet another inputs.
 See the [example](https://git.sr.ht/~bzm/smoothflake/tree/main/item/templates/default/.config/treefmt.nix).
-It will set `checks.<system>.default` and `formatter.<system>` in your flake
+It will set `checks.<system>.treefmt` and `formatter.<system>` in your flake
 outputs (overridable).
 
 ```nix

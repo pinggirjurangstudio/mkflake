@@ -190,7 +190,7 @@ let
             in
             {
               formatter = lib.mkDefault treefmtFormatter;
-              checks.default = lib.mkDefault treefmtCheck;
+              checks.treefmt = lib.mkDefault treefmtCheck;
             }
           )
         ];
