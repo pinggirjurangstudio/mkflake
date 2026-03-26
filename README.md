@@ -180,19 +180,19 @@ on how to imports modules from other flake.
 NixOS assertions style also supported.
 
 ```nix
-      imports = [
-        {
-          assertions = [
-            {
-              assertion = false;
-              message = "This shouldn't be false";
-            }
-          ];
-        }
-      ];
+imports = [
+  {
+    assertions = [
+      {
+        assertion = false;
+        message = "This shouldn't be false";
+      }
+    ];
+  }
+];
 ```
 
-```sh
+```
 Failed assertions:
 - This shouldn't be false
 ```
