@@ -1,5 +1,5 @@
 {
-  description = "A modular flake builder with smoothflake.lib.mkFlake";
+  description = "A modular flake outputs builder";
 
   outputs =
     { self }:

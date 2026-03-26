@@ -1,5 +1,21 @@
+# A modular flake outputs builder.
+#
 # Vendoring this file by using the following template:
 # nix flake init -t sourcehut:~bzm/smoothflake#lib
+#
+# Usage:
+# {
+#   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+#   outputs =
+#     { nixpkgs, ... }@inputs:
+#     import ./mkflake.nix {
+#       inherit nixpkgs inputs;
+#       systems = [ "aarch64-darwin" ];
+#       imports = [ ./your-module.nix ];
+#     };
+# }
+#
+# For more information, see: https://git.sr.ht/~bzm/smoothflake
 
 {
   nixpkgs,
@@ -10,46 +26,28 @@
 
 let
   inherit (nixpkgs) lib;
-  inherit (lib) mkOption types;
-
-  # https://wiki.nixos.org/wiki/Flakes#Output_schema
+  inherit (lib) types;
+  mkOption = type: lib.mkOption { inherit type; };
+  mkOption' = type: default: lib.mkOption { inherit type default; };
+  assertion = types.submodule {
+    options.assertion = mkOption types.bool;
+    options.message = mkOption types.str;
+  };
 
   _global = rec {
+    submodule = {
+      freeform = types.submodule { freeformType = types.attrsOf types.unspecified; };
+    };
     schema.options = {
-      templates = mkOption {
-        type = types.attrsOf types.unspecified;
-        default = { };
-      };
-      nixosModules = mkOption {
-        type = types.attrsOf types.unspecified;
-        default = { };
-      };
-      nixosConfigurations = mkOption {
-        type = types.attrsOf types.unspecified;
-        default = { };
-      };
-      overlays = mkOption {
-        type = types.attrsOf types.unspecified;
-        default = { };
-      };
-      perSystem = mkOption {
-        type = types.deferredModule;
-        default = { };
-      };
-      flakeModules = mkOption {
-        type = types.attrsOf types.unspecified;
-        default = { };
-      };
-      lib = mkOption {
-        type = types.attrsOf types.unspecified;
-        default = { };
-      };
-      flake = mkOption {
-        type = types.submodule {
-          freeformType = types.attrsOf types.unspecified;
-        };
-        default = { };
-      };
+      templates = mkOption' (types.attrsOf types.unspecified) { };
+      nixosModules = mkOption' (types.attrsOf types.unspecified) { };
+      nixosConfigurations = mkOption' (types.attrsOf types.unspecified) { };
+      overlays = mkOption' (types.attrsOf types.unspecified) { };
+      flakeModules = mkOption' (types.attrsOf types.unspecified) { };
+      lib = mkOption' (types.attrsOf types.unspecified) { };
+      perSystem = mkOption' (types.deferredModule) { };
+      flake = mkOption' submodule.freeform { };
+      assertions = mkOption' (types.listOf assertion) [ ];
     };
     config =
       (lib.evalModules {
@@ -59,65 +57,27 @@ let
   };
 
   _perSystem = rec {
+    submodule = {
+      treefmt = types.submodule {
+        options.excludes = mkOption' (types.listOf types.str) [ ];
+        options.formatter = mkOption' (types.attrsOf submodule.formatter) { };
+      };
+      formatter = types.submodule {
+        options.command = mkOption (types.either types.path types.str);
+        options.includes = mkOption (types.listOf types.str);
+        options.excludes = mkOption' (types.listOf types.str) [ ];
+        options.options = mkOption' (types.listOf types.str) [ ];
+      };
+    };
     schema.options = {
-      checks = mkOption {
-        type = types.attrsOf types.package;
-        default = { };
-      };
-      formatter = mkOption {
-        type = types.nullOr types.package;
-        default = null;
-      };
-      devShells = mkOption {
-        type = types.attrsOf types.package;
-        default = { };
-      };
-      packages = mkOption {
-        type = types.attrsOf types.package;
-        default = { };
-      };
-      legacyPackages = mkOption {
-        type = types.attrsOf types.package;
-        default = { };
-      };
-      apps = mkOption {
-        type = types.attrsOf types.unspecified;
-        default = { };
-      };
-      treefmt = mkOption {
-        type = types.submodule {
-          options = {
-            excludes = mkOption {
-              type = types.listOf types.str;
-              default = [ ];
-            };
-            formatter = mkOption {
-              type = types.attrsOf (
-                types.submodule {
-                  options = {
-                    command = mkOption {
-                      type = types.either types.path types.str;
-                    };
-                    includes = mkOption {
-                      type = types.listOf types.str;
-                    };
-                    excludes = mkOption {
-                      type = types.listOf types.str;
-                      default = [ ];
-                    };
-                    options = mkOption {
-                      type = types.listOf types.str;
-                      default = [ ];
-                    };
-                  };
-                }
-              );
-              default = { };
-            };
-          };
-        };
-        default = { };
-      };
+      checks = mkOption' (types.attrsOf types.package) { };
+      formatter = mkOption' (types.nullOr types.package) null;
+      devShells = mkOption' (types.attrsOf types.package) { };
+      packages = mkOption' (types.attrsOf types.package) { };
+      legacyPackages = mkOption' (types.attrsOf types.package) { };
+      apps = mkOption' (types.attrsOf types.unspecified) { };
+      treefmt = mkOption' (submodule.treefmt) { };
+      assertions = mkOption' (types.listOf assertion) [ ];
     };
     config = lib.genAttrs systems (
       system:
@@ -200,22 +160,42 @@ let
 
   removeEmptyAttrs = lib.filterAttrs (_: v: v != { } && v != null);
   mapSystems = attr: removeEmptyAttrs (lib.mapAttrs (_: cfg: cfg.${attr}) _perSystem.config);
+  globalAssertions = map (a: a // { system = null; }) (_global.config.assertions or [ ]);
+  perSystemAssertions = lib.flatten (
+    lib.mapAttrsToList (
+      system: cfg: map (a: a // { system = system; }) (cfg.assertions or [ ])
+    ) _perSystem.config
+  );
+  failedAssertions = lib.filter (a: !(a.assertion)) (globalAssertions ++ perSystemAssertions);
 in
 
-removeEmptyAttrs {
-  inherit (_global.config)
-    templates
-    nixosModules
-    nixosConfigurations
-    overlays
-    flakeModules
-    lib
-    ;
-  checks = mapSystems "checks";
-  formatter = mapSystems "formatter";
-  devShells = mapSystems "devShells";
-  packages = mapSystems "packages";
-  legacyPackages = mapSystems "legacyPackages";
-  apps = mapSystems "apps";
-}
-// _global.config.flake
+if failedAssertions != [ ] then
+  throw ''
+
+    Failed assertions:
+    ${lib.concatStringsSep "\n" (
+      map (
+        a: if a.system == null then "- ${a.message}" else "- ${a.message} [${a.system}]"
+      ) failedAssertions
+    )}
+  ''
+else
+  (
+    removeEmptyAttrs {
+      inherit (_global.config)
+        templates
+        nixosModules
+        nixosConfigurations
+        overlays
+        flakeModules
+        lib
+        ;
+      checks = mapSystems "checks";
+      formatter = mapSystems "formatter";
+      devShells = mapSystems "devShells";
+      packages = mapSystems "packages";
+      legacyPackages = mapSystems "legacyPackages";
+      apps = mapSystems "apps";
+    }
+    // _global.config.flake
+  )

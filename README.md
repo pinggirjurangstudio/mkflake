@@ -1,7 +1,7 @@
 # smoothflake
 [![builds.sr.ht status](https://builds.sr.ht/~bzm/smoothflake.svg)](https://builds.sr.ht/~bzm/smoothflake?)
 
-A [modular](https://nixos.wiki/wiki/NixOS_modules) flake builder with `smoothflake.lib.mkFlake`.
+A [modular](https://nixos.wiki/wiki/NixOS_modules) [flake outputs](https://wiki.nixos.org/wiki/Flakes#Output_schema) builder.
 
 ```nix
 {
@@ -174,6 +174,28 @@ You can share your outputs via the following attribute set:
 
 See [hello template](https://git.sr.ht/~bzm/smoothflake/tree/main/item/templates/hello/flake.nix)
 on how to imports modules from other flake.
+
+### Assertions
+
+NixOS assertions style also supported.
+
+```nix
+      imports = [
+        {
+          assertions = [
+            {
+              assertion = false;
+              message = "This shouldn't be false";
+            }
+          ];
+        }
+      ];
+```
+
+```sh
+Failed assertions:
+- This shouldn't be false
+```
 
 ## Templates
 
