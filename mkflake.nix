@@ -147,10 +147,26 @@ let
                     git --no-pager diff --exit-code
                     touch $out
                   '';
+              globalAssertions = map (a: a // { system = null; }) (_global.config.assertions or [ ]);
+              perSystemAssertions = map (a: a // { inherit system; }) (config.assertions or [ ]);
+              failedAssertions = lib.filter (a: !(a.assertion)) (globalAssertions ++ perSystemAssertions);
+              smoothflakeCheck = pkgs.runCommandLocal "smoothflake-check" { } ''
+                ${
+                  if failedAssertions != [ ] then
+                    throw ''
+
+                      Failed assertions:
+                      ${lib.concatStringsSep "\n" (map (a: "- ${a.message}") failedAssertions)}
+                    ''
+                  else
+                    "echo 'All assertions are passed' > $out"
+                }
+              '';
             in
             {
               formatter = lib.mkDefault treefmtFormatter;
               checks.treefmt = lib.mkDefault treefmtCheck;
+              checks.smoothflake = smoothflakeCheck;
             }
           )
         ];
@@ -160,42 +176,22 @@ let
 
   removeEmptyAttrs = lib.filterAttrs (_: v: v != { } && v != null);
   mapSystems = attr: removeEmptyAttrs (lib.mapAttrs (_: cfg: cfg.${attr}) _perSystem.config);
-  globalAssertions = map (a: a // { system = null; }) (_global.config.assertions or [ ]);
-  perSystemAssertions = lib.flatten (
-    lib.mapAttrsToList (
-      system: cfg: map (a: a // { system = system; }) (cfg.assertions or [ ])
-    ) _perSystem.config
-  );
-  failedAssertions = lib.filter (a: !(a.assertion)) (globalAssertions ++ perSystemAssertions);
 in
 
-if failedAssertions != [ ] then
-  throw ''
-
-    Failed assertions:
-    ${lib.concatStringsSep "\n" (
-      map (
-        a: if a.system == null then "- ${a.message}" else "- ${a.message} [${a.system}]"
-      ) failedAssertions
-    )}
-  ''
-else
-  (
-    removeEmptyAttrs {
-      inherit (_global.config)
-        templates
-        nixosModules
-        nixosConfigurations
-        overlays
-        flakeModules
-        lib
-        ;
-      checks = mapSystems "checks";
-      formatter = mapSystems "formatter";
-      devShells = mapSystems "devShells";
-      packages = mapSystems "packages";
-      legacyPackages = mapSystems "legacyPackages";
-      apps = mapSystems "apps";
-    }
-    // _global.config.flake
-  )
+removeEmptyAttrs {
+  inherit (_global.config)
+    templates
+    nixosModules
+    nixosConfigurations
+    overlays
+    flakeModules
+    lib
+    ;
+  checks = mapSystems "checks";
+  formatter = mapSystems "formatter";
+  devShells = mapSystems "devShells";
+  packages = mapSystems "packages";
+  legacyPackages = mapSystems "legacyPackages";
+  apps = mapSystems "apps";
+}
+// _global.config.flake

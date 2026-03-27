@@ -177,7 +177,7 @@ on how to imports modules from other flake.
 
 ### Assertions
 
-NixOS assertions style also supported.
+NixOS assertions style also supported. It will set `checks.<system>.smoothflake` in your flake outputs.
 
 ```nix
 imports = [
