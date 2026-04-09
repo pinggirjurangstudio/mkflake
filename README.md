@@ -1,41 +1,69 @@
-# smoothflake
-[![builds.sr.ht status](https://builds.sr.ht/~bzm/smoothflake.svg)](https://builds.sr.ht/~bzm/smoothflake?)
+# mkflake
 
-A [modular](https://nixos.wiki/wiki/NixOS_modules) [flake outputs](https://wiki.nixos.org/wiki/Flakes#Output_schema) builder.
+A lightweight, [modular](https://nixos.wiki/wiki/NixOS_modules) [Nix Flakes outputs](https://wiki.nixos.org/wiki/Flakes#Output_schema) builder designed to be vendored.
+
+## Quick start
+
+Vendored the `mkflake.nix`.
+
+```console
+nix flake init -t github:pinggirjurangstudio/mkflake
+```
+
+Use `mkflake.nix` to build flakes outputs in a modular way.
 
 ```nix
 {
-  description = "Default smoothflake template";
-
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    smoothflake.url = "sourcehut:~bzm/smoothflake";
-  };
-
+  description = "A lightweight, modular Nix Flakes outputs builder designed to be vendored";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   outputs =
-    { nixpkgs, smoothflake, ... }@inputs:
-    smoothflake.lib.mkFlake {
-      inherit nixpkgs inputs;
+    { ... }@inputs:
+    import ./mkflake.nix {
+      inherit inputs;
       systems = [
         "x86_64-linux"
         "aarch64-linux"
-        "x86_64-darwin"
         "aarch64-darwin"
       ];
       imports = [
-        # # Uncomment this to modify the pkgs, e.g. to set allowUnfree.
-        # {
-        #   perSystem =
-        #     { pkgs, system, ... }:
-        #     {
-        #       _module.args.pkgs = import nixpkgs {
-        #         inherit system;
-        #         config.allowUnfree = true;
-        #       };
-        #     };
-        # }
-        { perSystem = import ./.config/shell.nix; }
-        { perSystem = import ./.config/treefmt.nix; }
+        {
+          templates.default = {
+            path = builtins.path {
+              path = ./.;
+              filter = p: _: baseNameOf p == "mkflake.nix";
+            };
+            description = "Use mkflake by vendoring the mkflake.nix";
+          };
+        }
+        {
+          perSystem =
+            { pkgs, ... }:
+            {
+              # See: https://treefmt.com/latest/getting-started/configure/#config-file
+              treefmt = {
+                formatter = {
+                  nixfmt = {
+                    command = "${pkgs.nixfmt}/bin/nixfmt";
+                    includes = [ "*.nix" ];
+                  };
+                  yamlfmt = {
+                    command = "${pkgs.yamlfmt}/bin/yamlfmt";
+                    includes = [
+                      "*.yaml"
+                      "*.yml"
+                    ];
+                  };
+                  actionlint = {
+                    command = "${pkgs.actionlint}/bin/actionlint";
+                    includes = [
+                      ".github/workflows/*.yaml"
+                      ".github/workflows/*.yml"
+                    ];
+                  };
+                };
+              };
+            };
+        }
       ];
     };
 }
@@ -45,30 +73,30 @@ A [modular](https://nixos.wiki/wiki/NixOS_modules) [flake outputs](https://wiki.
 
 ### Modular design
 
-If you like [modules](https://nixos.wiki/wiki/NixOS_modules) in NixOS, you'll love `smoothflake`.
+If you like [NixOS modules](https://nixos.wiki/wiki/NixOS_modules), you'll love `mkflake`.
 
 ### Systems abstraction
 
 All system-specific outputs are abstracted using `perSystem` options.
 
 ```nix
-# ./.config/shell.nix
+# shell.nix
 {
   perSystem =
     { pkgs, ... }:
-
     {
       devShells.default = pkgs.mkShell {
-        name = "smoothflake";
+        name = "mkflake";
         packages = [ ];
       };
     };
 }
 
-# import the module using path
+# flake.nix
+# import the module
 ...
 imports = [
-  ./.config/shell.nix
+  ./shell.nix
 ];
 ...
 ```
@@ -76,54 +104,22 @@ imports = [
 You can simplify them by moving `perSystem` into imports.
 
 ```nix
-# ./.config/shell.nix
+# shell.nix
 { pkgs, ... }:
-
 {
   devShells.default = pkgs.mkShell {
-    name = "smoothflake";
+    name = "mkflake";
     packages = [ ];
   };
 }
 
-# import the module using module that import them into perSystem
+# flake.nix
+# import the module into perSystem
 ...
 imports = [
-  { perSystem = import ./.config/shell.nix; }
+  { perSystem = import ./shell.nix; }
 ];
 ...
-```
-
-### Minimal to no dependency
-
-The [flake.nix](https://git.sr.ht/~bzm/smoothflake/tree/main/item/flake.nix)
-doesn't have any dependency/inputs. So when using `smoothflake`, the only
-dependency is `nixpkgs` and the `smoothflake` itself.
-
-You can further eliminate the `smoothflake` dependency by vendoring the
-[mkflake.nix](https://git.sr.ht/~bzm/smoothflake/tree/main/item/mkflake.nix)
-(its only around 200LOC) into your existing/new project using the following template:
-
-```sh
-nix flake init -t sourcehut:~bzm/smoothflake#lib
-```
-
-Then modify your `flake.nix`:
-
-```diff
-   inputs = {
-     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
--    smoothflake.url = "sourcehut:~bzm/smoothflake";
-   };
- 
-   outputs =
--    { nixpkgs, smoothflake, ... }@inputs:
--    smoothflake.lib.mkFlake {
-+    { nixpkgs, ... }@inputs:
-+    import ./mkflake.nix {
-       inherit nixpkgs inputs;
-       systems = [
-         "x86_64-linux"
 ```
 
 ### Treefmt integration (require no additional inputs)
@@ -137,14 +133,12 @@ We also blessed by [treefmt-nix](https://github.com/numtide/treefmt-nix) which
 allow us to use nix to configure them instead of using TOML. However, using
 `treefmt-nix` require adding another inputs to our flake.
 
-With `smoothflake`, you can use `treefmt` without adding yet another inputs.
-See the [example](https://git.sr.ht/~bzm/smoothflake/tree/main/item/templates/default/.config/treefmt.nix).
+With `mkflake`, you can use `treefmt` without adding another inputs.
 It will set `checks.<system>.treefmt` and `formatter.<system>` in your flake
 outputs (overridable).
 
 ```nix
 { pkgs, ... }:
-
 {
   # See: https://treefmt.com/latest/getting-started/configure/#config-file
   treefmt = {
@@ -160,6 +154,13 @@ outputs (overridable).
           "*.yml"
         ];
       };
+      actionlint = {
+        command = "${pkgs.actionlint}/bin/actionlint";
+        includes = [
+          ".github/workflows/*.yaml"
+          ".github/workflows/*.yml"
+        ];
+      };
     };
   };
 }
@@ -168,28 +169,23 @@ outputs (overridable).
 ### Share your flake outputs
 
 You can share your outputs via the following attribute set:
-- `flakeModules.<name>` modules to be imported by other flakes
+- `flakeModules.<name>` modules to be imported by other flakes (similar to `nixosModules.<name>` for NixOS)
 - `lib.<name>` library
 - `flake` any other arbitrary attributes goes here
 
-See [hello template](https://git.sr.ht/~bzm/smoothflake/tree/main/item/templates/hello/flake.nix)
-on how to imports modules from other flake.
-
 ### Assertions
 
-NixOS assertions style also supported. It will set `checks.<system>.smoothflake` in your flake outputs.
+NixOS assertions style also supported. It will set `checks.<system>.mkflake` in your flake outputs.
 
 ```nix
-imports = [
-  {
-    assertions = [
-      {
-        assertion = false;
-        message = "This shouldn't be false";
-      }
-    ];
-  }
-];
+{
+  assertions = [
+    {
+      assertion = false;
+      message = "This shouldn't be false";
+    }
+  ];
+}
 ```
 
 ```
@@ -197,30 +193,13 @@ Failed assertions:
 - This shouldn't be false
 ```
 
-## Templates
-
-- Default smoothflake template
-    ```sh
-    nix flake init -t sourcehut:~bzm/smoothflake
-    ```
-- Use smoothflake by vendoring the mkflake.nix
-    ```sh
-    nix flake init -t sourcehut:~bzm/smoothflake#lib
-    ```
-- Hello smoothflake template for flakeModules demo
-    ```sh
-    nix flake init -t sourcehut:~bzm/smoothflake#hello
-    nix run .#hello
-    ```
-
 ## Similar project
 
 ### [flake-parts](https://github.com/hercules-ci/flake-parts/tree/main)
 
-The `smoothflake` are heavily inspired by `flake-parts`. You can even say its a
+The `mkflake` are heavily inspired by `flake-parts`. You can even say its a
 `flake-parts` but stripped-down all the unnecessary parts including unnecessary
-dependency/inputs. You can even remove `smoothflake` dependency by vendoring
-the `mkflake.nix`.
+dependency/inputs by vendoring the `mkflake.nix`.
 
 ### [flake-utils](https://github.com/numtide/flake-utils)
 
