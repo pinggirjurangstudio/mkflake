@@ -1,4 +1,4 @@
-# mkflake
+# mkflake [![main](https://github.com/pinggirjurangstudio/mkflake/actions/workflows/main.yaml/badge.svg)](https://github.com/pinggirjurangstudio/mkflake/actions/workflows/main.yaml)
 
 A lightweight, [modular](https://nixos.wiki/wiki/NixOS_modules) [Nix Flakes outputs](https://wiki.nixos.org/wiki/Flakes#Output_schema) builder designed to be vendored.
 
