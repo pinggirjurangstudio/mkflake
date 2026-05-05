@@ -31,9 +31,12 @@
                     command = "${pkgs.nixfmt}/bin/nixfmt";
                     includes = [ "*.nix" ];
                   };
-                  yamlfmt = {
-                    command = "${pkgs.yamlfmt}/bin/yamlfmt";
+                  prettier = {
+                    command = "${pkgs.prettier}/bin/prettier";
+                    options = [ "--write" ];
                     includes = [
+                      "*.md"
+                      "*.json"
                       "*.yaml"
                       "*.yml"
                     ];

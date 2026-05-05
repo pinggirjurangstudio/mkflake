@@ -169,6 +169,7 @@ outputs (overridable).
 ### Share your flake outputs
 
 You can share your outputs via the following attribute set:
+
 - `flakeModules.<name>` modules to be imported by other flakes (similar to `nixosModules.<name>` for NixOS)
 - `lib.<name>` library
 - `flake` any other arbitrary attributes goes here
@@ -192,6 +193,12 @@ NixOS assertions style also supported. It will set `checks.<system>.mkflake` in 
 Failed assertions:
 - This shouldn't be false
 ```
+
+### Debug
+
+The flake exposes `debug.mkflake.global` and `debug.mkflake.<system>` which
+allowing lsp to provide better documentation. See the usage with `nixd` and `zed`
+in the [zed settings](.zed/settings.json).
 
 ## Similar project
 
