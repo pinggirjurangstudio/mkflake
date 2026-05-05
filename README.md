@@ -204,9 +204,10 @@ Failed assertions:
 
 ### Debug
 
-The flake exposes `debug.mkflake.global` and `debug.mkflake.<system>` which
-allowing lsp to provide better documentation. See the usage with `nixd` and `zed`
-in the [zed settings](.zed/settings.json).
+The flake exposes `debug.mkflake.global` and `debug.mkflake.<system>`
+which allowing lsp to provide better documentation. See the example usage with
+[nixd](https://github.com/nix-community/nixd) and [zed](https://github.com/zed-industries/zed)
+in the [.zed settings](.zed/settings.json).
 
 ## Similar project
 
