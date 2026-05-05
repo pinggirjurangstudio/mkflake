@@ -40,6 +40,7 @@
                       "*.yaml"
                       "*.yml"
                     ];
+                    excludes = [ ".zed/*.json" ];
                   };
                   actionlint = {
                     command = "${pkgs.actionlint}/bin/actionlint";
