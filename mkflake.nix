@@ -50,6 +50,12 @@ let
       nixosConfigurations =
         mkOption' (types.attrsOf types.unspecified) { }
           "Instantiated NixOS systems defined by this flake.";
+      darwinConfigurations =
+        mkOption' (types.attrsOf types.unspecified) { }
+          "Instantiated NixOS systems defined by this flake.";
+      homeConfigurations =
+        mkOption' (types.attrsOf types.unspecified) { }
+          "Instantiated NixOS systems defined by this flake.";
       overlays =
         mkOption' (types.attrsOf types.unspecified) { }
           "Nixpkgs overlays used to modify or extend the package set.";
