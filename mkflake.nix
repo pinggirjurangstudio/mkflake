@@ -230,6 +230,8 @@ removeEmptyAttrs {
     templates
     nixosModules
     nixosConfigurations
+    darwinConfigurations
+    homeConfigurations
     overlays
     flakeModules
     lib
